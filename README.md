@@ -9,7 +9,7 @@ Decentralized Docker Hub Registry has support for encryption and team sharing vi
 Custom cron scripts can be written to periodically backup the buckets containing the Docker images to Filecoin.
 
 
-## Getting Started
+# Getting Started
 
 1. Install Node (v12.10.0 or above)
 
@@ -31,13 +31,13 @@ Custom cron scripts can be written to periodically backup the buckets containing
    we only support only one max concurrent upload at a time. Hence update max-concurrent-uploads to 1 
    for your docker daemon. 
 
-### Select one of the approach for running the docker registry server
+## Select one of the approach for running the docker registry server
 
 1. Textile Hub
 2. Textile Hub via Fleek Space Daemon
 
 
-#### Textile Hub
+### Textile Hub
 1. Setup Textile Hub 
 
       Select one of the below approaches (Textile Hosted Textile Hub or Self Hosted Textile Hub)
@@ -154,7 +154,7 @@ Custom cron scripts can be written to periodically backup the buckets containing
    ```
     
     
-#### Textile Hub via Fleek Space Daemon
+### Textile Hub via Fleek Space Daemon
 1. Run Fleek Space Daemon
 
    https://docs.fleek.co/space-daemon/getting-started/#installation 
