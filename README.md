@@ -1,6 +1,6 @@
 # Decentralized Docker Hub Registry
 
-![](logo.png | width=100)
+![](logo.png)
 
 Decentralized Docker Hub Registry allows you to push and pull docker images from IPFS. It
 provides a native docker integration via a custom docker registry server (v2). It is powered by 
