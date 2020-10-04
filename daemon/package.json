@@ -1,0 +1,12 @@
+{
+  "requires": true,
+  "lockfileVersion": 1,
+  "dependencies": {
+    "@fleekhq/space-client": "^1.0.3",
+    "bluebird": "^3.7.2",
+    "express": "^4.17.1",
+    "morgan-body": "^2.5.2",
+    "uuid": "^8.3.0",
+    "xmlhttprequest": "^1.8.0"
+  }
+}
