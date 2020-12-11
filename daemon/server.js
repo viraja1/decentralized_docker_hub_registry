@@ -24,10 +24,15 @@ const client = new SpaceClient({
     url: `http://0.0.0.0:9998`,
     defaultBucket: bucketName
 });
+const token = process.env.DAEMON_TOKEN;
 client
     .createBucket({
-        slug: bucketName
-    })
+            slug: bucketName
+        },
+        {
+            authorization: `AppToken ${token}`,
+        }
+    )
     .then((res) => {
         const bucket = res.getBucket();
         console.log(bucket.getPath());
@@ -80,7 +85,13 @@ app.head('/v2/:name/blobs/:digest', async (request, response) => {
     const bucketPath = path.join('/blobs', request.params.digest);
     let fileResponse;
     try {
-        fileResponse = await client.openFile({bucket: bucketName, path: bucketPath});
+        fileResponse = await client.openFile({
+                bucket: bucketName,
+                path: bucketPath
+            },
+            {
+                authorization: `AppToken ${token}`,
+            });
     } catch (e) {
         return response.status(404).end();
     }
@@ -152,9 +163,12 @@ app.put('/v2/:name/blobs/uploads/:uuid', async (request, response) => {
     let stream;
     try {
         stream = client.addItems({
-            targetPath: '/blobs/', // path in the bucket to be saved
-            sourcePaths: [newFileName]
-        });
+                targetPath: '/blobs/', // path in the bucket to be saved
+                sourcePaths: [newFileName]
+            },
+            {
+                authorization: `AppToken ${token}`,
+            });
     } catch (e) {
         console.log(e);
         return response.status(500).end();
@@ -182,7 +196,13 @@ app.get('/v2/:name/blobs/:digest', async (request, response) => {
     const bucketPath = path.join('/blobs', request.params.digest);
     let fileResponse;
     try {
-        fileResponse = await client.openFile({bucket: bucketName, path: bucketPath});
+        fileResponse = await client.openFile({
+                bucket: bucketName,
+                path: bucketPath
+            },
+            {
+                authorization: `AppToken ${token}`,
+            });
     } catch (e) {
         console.log(e);
         return response.status(500).end();
@@ -218,9 +238,12 @@ app.put('/v2/:name/manifests/:reference', (request, response) => {
             let uploadStream;
             try {
                 uploadStream = client.addItems({
-                    targetPath: '/manifests/' + request.params.name + "/", // path in the bucket to be saved
-                    sourcePaths: [filename]
-                });
+                        targetPath: '/manifests/' + request.params.name + "/", // path in the bucket to be saved
+                        sourcePaths: [filename]
+                    },
+                    {
+                        authorization: `AppToken ${token}`,
+                    });
             } catch (e) {
                 console.log(e);
                 return response.status(500).end();
@@ -255,7 +278,13 @@ app.get('/v2/:name/manifests/:reference', async (request, response) => {
     const bucketPath = path.join('/manifests', request.params.name, request.params.reference);
     let fileResponse;
     try {
-        fileResponse = await client.openFile({bucket: bucketName, path: bucketPath})
+        fileResponse = await client.openFile({
+                bucket: bucketName,
+                path: bucketPath
+            },
+            {
+                authorization: `AppToken ${token}`,
+            })
     } catch (e) {
         return response.status(404).send('{"errors": [{"code": "MANIFEST_UNKNOWN", "message": "MANIFEST_UNKNOWN"}]}');
     }

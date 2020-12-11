@@ -158,6 +158,11 @@ Custom cron scripts can be written to periodically backup the buckets containing
    ```
    node generate_key_pair.js
    ```
+   
+   Note down the generated token and set it as an environment variable
+   ```
+   export DAEMON_TOKEN= 
+   ```
 
 5. Start server
  

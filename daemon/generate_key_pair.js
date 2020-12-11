@@ -8,10 +8,18 @@ const client = new SpaceClient({
     url: `http://0.0.0.0:9998`,
     defaultBucket: bucketName
 });
-client.generateKeyPairWithForce()
-    .then(() => {
-        console.log('keys generated');
+client.initializeMasterAppToken().then((initializeMasterAppTokenRes) => {
+    const token = initializeMasterAppTokenRes.getApptoken();
+    console.log(`Token: ${token}`);
+    client.generateKeyPairWithForce({
+        authorization: `AppToken ${token}`,
     })
-    .catch((err) => {
-        console.error(err);
-    });
+        .then(() => {
+            console.log('keys generated');
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+}).catch((e) => {
+    console.log(e);
+});
