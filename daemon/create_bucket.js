@@ -8,10 +8,15 @@ const client = new SpaceClient({
     url: `http://0.0.0.0:9998`,
     defaultBucket: bucketName
 });
+const token = process.env.DAEMON_TOKEN;
 client
     .createBucket({
-        slug: bucketName
-    })
+            slug: bucketName
+        },
+        {
+            authorization: `AppToken ${token}`,
+        }
+    )
     .then((res) => {
         const bucket = res.getBucket();
         console.log(bucket.getPath());
