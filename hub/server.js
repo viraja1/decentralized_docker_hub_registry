@@ -9,6 +9,9 @@ const path = require('path');
 const crypto = require('crypto');
 global.WebSocket = require('isomorphic-ws');
 const {Buckets} = require('@textile/hub');
+const {Context} = require('@textile/context');
+const {Client} = require('@textile/threads-client');
+const {ThreadID} = require('@textile/threads');
 
 
 const app = express();
@@ -23,6 +26,7 @@ const isPrivate = process.env.BUCKET_ENCRYPTION === "true";
 const hubHost = process.env.HUB_HOST;
 const hubKey = process.env.HUB_KEY;
 const hubSecret = process.env.HUB_SECRET;
+const threadName = 'buckets';
 const keyInfo = {
     key: hubKey,
     secret: hubSecret
@@ -58,6 +62,20 @@ let tryMkdirSync = (dir) => {
 };
 
 
+let createLocalBucket = async () => {
+    let ctx = new Context(hubHost);
+    const threadsClient = new Client(ctx);
+    let threadID = ThreadID.fromRandom();
+    await threadsClient.newDB(threadID, threadName);
+    ctx.withThread(threadID);
+    let buckets = new Buckets(ctx);
+    let bucketResponse = await buckets.create(bucketName, {threadName: threadName, encrypted: isPrivate});
+    console.log(bucketResponse);
+    let bucketKey = bucketResponse.root.key;
+    return {buckets, bucketKey}
+};
+
+
 let getBucket = async () => {
     let buckets;
     try {
@@ -71,15 +89,42 @@ let getBucket = async () => {
         throw new Error('Buckets.withKeyInfo failed');
     }
     let bucketResponse;
+    let bucketKey;
     try {
-        bucketResponse = await buckets.getOrCreate(bucketName, 'buckets', isPrivate);
+        if(hubKey && hubSecret) {
+            bucketResponse = await buckets.getOrCreate(bucketName, {threadName: threadName, encrypted: isPrivate});
+            console.log(bucketResponse);
+            if (!bucketResponse.root) throw new Error('bucket not created');
+            bucketKey = bucketResponse.root.key;
+        }
+        else{
+            let ctx = new Context(hubHost);
+            const threadsClient = new Client(ctx);
+            const threadsList = await threadsClient.listDBs();
+            let threadId;
+            for (var key in threadsList) {
+                if(threadsList.hasOwnProperty(key) && threadsList[key].name === threadName){
+                    threadId = key;
+                }
+            }
+            if(!threadId){
+                let {buckets, bucketKey} = await createLocalBucket();
+                return {buckets, bucketKey}
+            }
+            ctx.withThread(threadId);
+            buckets = new Buckets(ctx);
+            let bucketList = await buckets.list();
+            bucketList.map(bucket => {
+               if(bucket.name === bucketName){
+                   bucketKey = bucket.key;
+               }
+            });
+            console.log(bucketKey);
+        }
     } catch(e){
         console.log(e);
         throw new Error('buckets.getOrCreate failed');
     }
-    console.log(bucketResponse.root);
-    if (!bucketResponse.root) throw new Error('bucket not created');
-    const bucketKey = bucketResponse.root.key;
     return {buckets, bucketKey}
 };
 

@@ -73,32 +73,13 @@ Custom cron scripts can be written to periodically backup the buckets containing
           
           2) Ensure that make, docker and docker-compose are installed for your OS
           
-          3) Start Textile Hub containers
+          3) Start Textile Bucket containers
              ```
-             make hub-up
-             ```
-             
-          4) Download the Hub CLI binary from the release landing page and install it: https://github.com/textileio/textile/releases/latest
-          
-          5) On MacOS you will need to confirm that it is okay to run the hub binary before it runs successfully.
-          
-          6) The next step is to initialize an account. The Hub CLI uses a magic-link signin, so it only requires you to enter and verify a valid email.
-            
-             ```
-             hub --api 127.0.0.1:3006 init
-             ```
-             
-             Open http://127.0.0.1:8006/confirm/hubsession in browser to verify your email (dev mode) 
-               
-          7) Create hub keys
-            
-             ```
-             hub --api 127.0.0.1:3006 keys create
+             make buck-up
              ```
           
-             Select API key type as account and Require Signature Authentication as N
-           
-             Then note down hub key and secret. It will be required for the further steps
+          4) HUB_KEY and HUB_SECRET env variable will be empty for this case
+
              
 2. Clone Decentralized Docker Hub Registry repo
  
@@ -121,9 +102,9 @@ Custom cron scripts can be written to periodically backup the buckets containing
    export HUB_SECRET=
    ```
     
-   For HUB_KEY and HUB_SECRET, use the values generated earlier via the hub cli.
+   For HUB_KEY and HUB_SECRET, use the values from the previous steps.
     
-   For self hosted Textile Hub, an extra env variable is required for host
+   For self hosted Textile Buckets, an extra env variable is required for host
     
    ```
    export HUB_HOST=http://127.0.0.1:3007
